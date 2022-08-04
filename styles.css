@@ -1,0 +1,19 @@
+#container {
+
+    height: 610px;
+    width: 610px;
+    border: 1px solid black;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.square {
+    height: 120px;
+    width: 120px;
+    border: 1px solid black;
+}
+
+#startBtn {
+    height: 30px;
+    width: 50px;
+}
