@@ -12,9 +12,12 @@ for(let i = 0; i < 25; i++) {
     container.append(box);
 }
 
-function beginGame() {
-    let memorySquares = [];
+const allSquares = document.querySelectorAll('div');
+
+function squaresSelected() {
+    
     for(let i = 0; i < 5; i++) {
+        
         let randomNum = Math.floor(Math.random() * 25) + 1;
         if(memorySquares.includes(randomNum)) {
           i--;
@@ -22,8 +25,18 @@ function beginGame() {
             memorySquares.push(randomNum);
         }
     }
-    console.log(memorySquares);
-    console.log(id);
+    getMemorySquares(memorySquares);
+}
+
+function getMemorySquares(squares) {
+    memorySquares = squares;
+}
+
+function beginGame() {
+    squaresSelected();
+ 
+
+    console.log(memorySquares)
     startPattern('red', memorySquares, 1000, 0)
         .then(() => startPattern('red', memorySquares, 1000, 1))
         .then(() => startPattern('red', memorySquares, 1000, 2))
@@ -34,9 +47,9 @@ function beginGame() {
         .then(() => removePattern(memorySquares, 1000, 1)) 
         .then(() => removePattern(memorySquares, 1000, 2))   
         .then(() => removePattern(memorySquares, 1000, 3))   
-        .then(() => removePattern(memorySquares, 1000, 4))      
+        .then(() => removePattern(memorySquares, 1000, 4))
 }
-
+let memorySquares = [];
 const startPattern = (color, squares, delay, counter) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {  
@@ -59,6 +72,20 @@ const removePattern = (squares, delay, counter) => {
     })
 }
 
+function getMemorySquares(squares) {
+    return squares;
+}
+
+allSquares.forEach(square => {
+    square.addEventListener('click', function() {
+        console.log(memorySquares);
+        if(memorySquares.includes(parseInt(square.id))){
+            square.style.backgroundColor = 'green';
+        } else {
+            console.log(`not working.... ${square.id}`)
+        }
+    })
+})
 
 
 start.addEventListener('click', beginGame);
