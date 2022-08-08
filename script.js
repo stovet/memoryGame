@@ -49,8 +49,6 @@ function beginGame() {
         .then(() => removePattern(memorySquares, 1000, 2))   
         .then(() => removePattern(memorySquares, 1000, 3))   
         .then(() => removePattern(memorySquares, 1000, 4))
-        
-   // resetMemorySquaresArray();
 }
 
 function resetMemorySquaresArray() {
@@ -89,13 +87,12 @@ const removePattern = (squares, delay, counter) => {
 let counter = 0;
 allSquares.forEach(square => {
     square.addEventListener('click', function() {
-       
             if(memorySquares[counter] == parseInt(square.id)){
                 square.style.backgroundColor = 'green';
                 counter++;
-                console.log(counter)
             } else {
-                console.log(`wrong square...`)
+                console.log(`wrong square... You lose`)
+                counter = 5; // force game fail
             }
             if(counter == 5) {
                 
