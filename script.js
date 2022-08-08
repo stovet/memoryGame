@@ -54,7 +54,13 @@ function beginGame() {
 }
 
 function resetMemorySquaresArray() {
+    for(let i = 0; i < 5; i++){
+        let square = document.getElementById(`${memorySquares[i]}`)
+        square.style.backgroundColor = 'white';
+    }
+    
     memorySquares = [];
+    
 }
 
 // handles squares initially changing color
@@ -83,25 +89,25 @@ const removePattern = (squares, delay, counter) => {
 let counter = 0;
 allSquares.forEach(square => {
     square.addEventListener('click', function() {
-        if(counter < 5) { // until all the squares are selected then clear memorySquares
+       
             if(memorySquares[counter] == parseInt(square.id)){
                 square.style.backgroundColor = 'green';
                 counter++;
+                console.log(counter)
             } else {
                 console.log(`wrong square...`)
             }
-        } else {
-            console.log('finished');
-            resetMemorySquaresArray();
-            beginGame();
-        }
-        // if(memorySquares.includes(parseInt(square.id))){
-        //     square.style.backgroundColor = 'green';
-        // } else {
-        //     console.log(`wrong square..${square.id}`)
-        // }
+            if(counter == 5) {
+                
+                resetMemorySquaresArray();
+                console.log(memorySquares);
+                counter = 0;
+            }
     })
+    
 })
+
+
 
 
 start.addEventListener('click', beginGame);
