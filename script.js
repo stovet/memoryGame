@@ -14,7 +14,8 @@ for(let i = 0; i < 25; i++) {
 
 const allSquares = document.querySelectorAll('div');
 
-function squaresSelected() {
+let memorySquares = [];
+function squaresSequence() {
     
     for(let i = 0; i < 5; i++) {
         
@@ -33,7 +34,7 @@ function getMemorySquares(squares) {
 }
 
 function beginGame() {
-    squaresSelected();
+    squaresSequence();
  
 
     console.log(memorySquares)
@@ -48,8 +49,15 @@ function beginGame() {
         .then(() => removePattern(memorySquares, 1000, 2))   
         .then(() => removePattern(memorySquares, 1000, 3))   
         .then(() => removePattern(memorySquares, 1000, 4))
+        
+   // resetMemorySquaresArray();
 }
-let memorySquares = [];
+
+function resetMemorySquaresArray() {
+    memorySquares = [];
+}
+
+// handles squares initially changing color
 const startPattern = (color, squares, delay, counter) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {  
@@ -61,6 +69,7 @@ const startPattern = (color, squares, delay, counter) => {
     })
 }
 
+// handles squares going back to white
 const removePattern = (squares, delay, counter) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -71,19 +80,26 @@ const removePattern = (squares, delay, counter) => {
         }, delay)
     })
 }
-
-function getMemorySquares(squares) {
-    return squares;
-}
-
+let counter = 0;
 allSquares.forEach(square => {
     square.addEventListener('click', function() {
-        console.log(memorySquares);
-        if(memorySquares.includes(parseInt(square.id))){
-            square.style.backgroundColor = 'green';
+        if(counter < 5) { // until all the squares are selected then clear memorySquares
+            if(memorySquares[counter] == parseInt(square.id)){
+                square.style.backgroundColor = 'green';
+                counter++;
+            } else {
+                console.log(`wrong square...`)
+            }
         } else {
-            console.log(`not working.... ${square.id}`)
+            console.log('finished');
+            resetMemorySquaresArray();
+            beginGame();
         }
+        // if(memorySquares.includes(parseInt(square.id))){
+        //     square.style.backgroundColor = 'green';
+        // } else {
+        //     console.log(`wrong square..${square.id}`)
+        // }
     })
 })
 
