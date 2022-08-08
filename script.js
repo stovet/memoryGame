@@ -1,8 +1,12 @@
 const container = document.querySelector('#container');
 const start = document.querySelector('#startBtn');
+const numberOfRounds = document.querySelector('#roundCount');
+const bestScore = document.querySelector('#bestScore');
 
-
-const id = [];
+let highScore = 0;
+let maxFlashCount = 5;
+let roundCount = 0;
+const id = []; // id for boxes for identification
 
 for(let i = 0; i < 25; i++) {
     id[i] = i;
@@ -17,7 +21,7 @@ const allSquares = document.querySelectorAll('div');
 let memorySquares = [];
 function squaresSequence() {
     
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < maxFlashCount; i++) {
         
         let randomNum = Math.floor(Math.random() * 25) + 1;
         if(memorySquares.includes(randomNum)) {
@@ -94,11 +98,16 @@ allSquares.forEach(square => {
                 console.log(`wrong square... You lose`)
                 counter = 5; // force game fail
             }
-            if(counter == 5) {
-                
+            if(counter == maxFlashCount) { 
+                roundCount++;
                 resetMemorySquaresArray();
                 console.log(memorySquares);
                 counter = 0;
+                numberOfRounds.textContent = `${roundCount}`;
+                if(roundCount >= highScore) {
+                    highScore = roundCount;
+                }
+                bestScore.textContent = `${highScore}`
             }
     })
     
