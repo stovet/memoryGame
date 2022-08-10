@@ -42,13 +42,13 @@ function beginGame() {
  
     canYouClick = false;
     console.log(memorySquares)
-    startPattern('red', memorySquares, 1000, 0)
-        .then(() => startPattern('red', memorySquares, 1000, 1))
-        .then(() => startPattern('red', memorySquares, 1000, 2))
-        .then(() => startPattern('red', memorySquares, 1000, 3))
-        .then(() => startPattern('red', memorySquares, 1000, 4))
+    startPattern('black', memorySquares, 0, 0)
+        .then(() => startPattern('black', memorySquares, 1000, 1))
+        .then(() => startPattern('black', memorySquares, 1000, 2))
+        .then(() => startPattern('black', memorySquares, 1000, 3))
+        .then(() => startPattern('black', memorySquares, 1000, 4))
 
-    removePattern(memorySquares, 2000, 0)
+    removePattern(memorySquares, 1000, 0)
         .then(() => removePattern(memorySquares, 1000, 1)) 
         .then(() => removePattern(memorySquares, 1000, 2))   
         .then(() => removePattern(memorySquares, 1000, 3))   
@@ -106,6 +106,7 @@ allSquares.forEach(square => {
                 counter++;
             } else {
                 console.log(`wrong square... You lose`)
+                square.style.backgroundColor = 'red';
                 wrongSquare = true; // force game fail
             }
             if(wrongSquare) {
