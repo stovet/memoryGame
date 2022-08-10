@@ -40,7 +40,7 @@ function getMemorySquares(squares) {
 function beginGame() {
     squaresSequence();
  
-
+    canYouClick = false;
     console.log(memorySquares)
     startPattern('red', memorySquares, 1000, 0)
         .then(() => startPattern('red', memorySquares, 1000, 1))
@@ -53,6 +53,7 @@ function beginGame() {
         .then(() => removePattern(memorySquares, 1000, 2))   
         .then(() => removePattern(memorySquares, 1000, 3))   
         .then(() => removePattern(memorySquares, 1000, 4))
+        .then(() => youCanClick(true))
 }
 
 function resetMemorySquaresArray() {
@@ -65,13 +66,18 @@ function resetMemorySquaresArray() {
     
 }
 
+let canYouClick = false;
+
+function youCanClick(click) {
+    canYouClick = click;
+}
 // handles squares initially changing color
 const startPattern = (color, squares, delay, counter) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {  
                     let pick = document.getElementById(`${squares[counter]}`)
                     pick.style.backgroundColor = color;
-                    counter++;
+                    //counter++;
                 resolve();
         }, delay)
     })
@@ -83,20 +89,33 @@ const removePattern = (squares, delay, counter) => {
         setTimeout(() => {
             let pick = document.getElementById(`${squares[counter]}`)
             pick.style.backgroundColor = 'white';
-            counter++;
+            //counter++;
             resolve();
         }, delay)
     })
 }
+
 let counter = 0;
-allSquares.forEach(square => {
+let wrongSquare = false;
+
+allSquares.forEach(square => {   
     square.addEventListener('click', function() {
+            if(canYouClick){
             if(memorySquares[counter] == parseInt(square.id)){
                 square.style.backgroundColor = 'green';
                 counter++;
             } else {
                 console.log(`wrong square... You lose`)
-                counter = 5; // force game fail
+                wrongSquare = true; // force game fail
+            }
+            if(wrongSquare) {
+                resetMemorySquaresArray();
+                counter = 0;
+                numberOfRounds.textContent = `${roundCount}`;
+                if(roundCount >= highScore) {
+                    highScore = roundCount;
+                }
+                bestScore.textContent = `${highScore}`
             }
             if(counter == maxFlashCount) { 
                 roundCount++;
@@ -109,11 +128,59 @@ allSquares.forEach(square => {
                 }
                 bestScore.textContent = `${highScore}`
             }
+        }
+        
     })
-    
+
 })
 
 
+
+// function delayClick(delay) {
+    // if(delay == true){
+    //     allSquares.forEach(square => {
+           
+    //                 square.style.pointerEvents = 'none';
+
+    //             })
+    //          } if(delay == false) {
+    
+//         allSquares.forEach(square => {
+//             //setTimeout(() => {
+                
+//                 square.addEventListener('click', function() {
+//                     if(memorySquares[counter] == parseInt(square.id)){
+//                         square.style.backgroundColor = 'green';
+//                         counter++;
+//                     } else {
+//                         console.log(`wrong square... You lose`)
+//                         wrongSquare = true; // force game fail
+//                     }
+//                     if(wrongSquare) {
+//                         resetMemorySquaresArray();
+//                         counter = 0;
+//                         numberOfRounds.textContent = `${roundCount}`;
+//                         if(roundCount >= highScore) {
+//                             highScore = roundCount;
+//                         }
+//                         bestScore.textContent = `${highScore}`
+//                     }
+//                     if(counter == maxFlashCount) { 
+//                         roundCount++;
+//                         resetMemorySquaresArray();
+//                         console.log(memorySquares);
+//                         counter = 0;
+//                         numberOfRounds.textContent = `${roundCount}`;
+//                         if(roundCount >= highScore) {
+//                             highScore = roundCount;
+//                         }
+//                         bestScore.textContent = `${highScore}`
+//                     }
+//             })
+//            // }, 6000)
+//         })
+    
+// }
 
 
 start.addEventListener('click', beginGame);
