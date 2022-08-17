@@ -1,5 +1,6 @@
 const container = document.querySelector('#container');
 const start = document.querySelector('#startBtn');
+const reset = document.querySelector('#reset');
 const numberOfRounds = document.querySelector('#roundCount');
 const bestScore = document.querySelector('#bestScore');
 
@@ -8,21 +9,54 @@ let maxFlashCount = 5;
 let roundCount = 0;
 const id = []; // id for boxes for identification
 
-for(let i = 0; i < 25; i++) {
+for(let i = 0; i < 25; i++) { 
     id[i] = i;
     let box = document.createElement('div');
+    
     box.classList.add('square');
     box.setAttribute('id', id[i] +1)
     container.append(box);
+    box.addEventListener('click', function(){
+            if(canYouClick){
+                console.log(`memorySquares- ${memorySquares}`)
+            if(memorySquares[counter] === parseInt(box.id)){
+                box.classList.add('green');
+                increaseCounter();
+                console.log(`counter- ${counter}`);
+            } else {
+                console.log(`should be-${memorySquares[counter]}, you clicked-${box.id}}`)
+                box.classList.add('red');
+                canYouClick = false;
+                resetCounter();
+                numberOfRounds.textContent = `${roundCount}`;
+                if(roundCount >= highScore) {
+                    highScore = roundCount;
+                }
+                roundCount = 0;
+                bestScore.textContent = `${highScore}`
+            }
+            if(counter == maxFlashCount) {
+                canYouClick = false; 
+                start.classList.remove('disable');
+                roundCount++;
+                resetMemorySquaresColor();
+                console.log(memorySquares);
+                resetCounter();
+                numberOfRounds.textContent = `${roundCount}`;
+                if(roundCount >= highScore) {
+                    highScore = roundCount;
+                }
+                bestScore.textContent = `${highScore}`
+            }
+    }
+})
 }
 
 const allSquares = document.querySelectorAll('div');
 
 let memorySquares = [];
-function squaresSequence() {
-    
+function squaresSequence() {   
     for(let i = 0; i < maxFlashCount; i++) {
-        
         let randomNum = Math.floor(Math.random() * 25) + 1;
         if(memorySquares.includes(randomNum)) {
           i--;
@@ -31,6 +65,7 @@ function squaresSequence() {
         }
     }
     getMemorySquares(memorySquares);
+    //console.log(memorySquares);
 }
 
 function getMemorySquares(squares) {
@@ -38,33 +73,25 @@ function getMemorySquares(squares) {
 }
 
 function beginGame() {
+    start.classList.add('disable'); // disable button while pattern is going
     squaresSequence();
- 
     canYouClick = false;
     console.log(memorySquares)
-    startPattern('black', memorySquares, 0, 0)
-        .then(() => startPattern('black', memorySquares, 1000, 1))
-        .then(() => startPattern('black', memorySquares, 1000, 2))
-        .then(() => startPattern('black', memorySquares, 1000, 3))
-        .then(() => startPattern('black', memorySquares, 1000, 4))
+    startPattern(memorySquares, 0, 0)
+        .then(() => startPattern(memorySquares, 500, 1))
+        .then(() => startPattern(memorySquares, 500, 2))
+        .then(() => startPattern(memorySquares, 500, 3))
+        .then(() => startPattern(memorySquares, 500, 4))
 
-    removePattern(memorySquares, 1000, 0)
-        .then(() => removePattern(memorySquares, 1000, 1)) 
-        .then(() => removePattern(memorySquares, 1000, 2))   
-        .then(() => removePattern(memorySquares, 1000, 3))   
-        .then(() => removePattern(memorySquares, 1000, 4))
-        .then(() => youCanClick(true))
+    removePattern(memorySquares, 500, 0)
+        .then(() => removePattern(memorySquares, 500, 1)) 
+        .then(() => removePattern(memorySquares, 500, 2))   
+        .then(() => removePattern(memorySquares, 500, 3))   
+        .then(() => removePattern(memorySquares, 500, 4))
+        .then(() => youCanClick(true)) // after sequence you can click squares
 }
 
-function resetMemorySquaresArray() {
-    for(let i = 0; i < 5; i++){
-        let square = document.getElementById(`${memorySquares[i]}`)
-        square.style.backgroundColor = 'white';
-    }
-    
-    memorySquares = [];
-    
-}
+
 
 let canYouClick = false;
 
@@ -72,12 +99,14 @@ function youCanClick(click) {
     canYouClick = click;
 }
 // handles squares initially changing color
-const startPattern = (color, squares, delay, counter) => {
+const startPattern = (squares, delay, counter) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {  
                     let pick = document.getElementById(`${squares[counter]}`)
-                    pick.style.backgroundColor = color;
-                    //counter++;
+                    //pick.style.backgroundColor = color;
+                    //pick.classList.remove('white')
+                    pick.classList.add('black');
+                    console.log(squares[counter])
                 resolve();
         }, delay)
     })
@@ -88,100 +117,98 @@ const removePattern = (squares, delay, counter) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             let pick = document.getElementById(`${squares[counter]}`)
-            pick.style.backgroundColor = 'white';
-            //counter++;
+          // pick.style.backgroundColor = 'white';
+          pick.classList.remove('black');
+          //pick.classList.add('white');
             resolve();
         }, delay)
     })
 }
 
+function resetMemorySquaresColor() {
+
+    allSquares.forEach(square => square.classList.remove('white', 'red', 'green'));
+
+   getMemorySquares([]);
+}
+
 let counter = 0;
-let wrongSquare = false;
+let wrongSquare = false; 
 
-allSquares.forEach(square => {   
-    square.addEventListener('click', function() {
-            if(canYouClick){
-            if(memorySquares[counter] == parseInt(square.id)){
-                square.style.backgroundColor = 'green';
-                counter++;
-            } else {
-                console.log(`wrong square... You lose`)
-                square.style.backgroundColor = 'red';
-                wrongSquare = true; // force game fail
-            }
-            if(wrongSquare) {
-                resetMemorySquaresArray();
-                counter = 0;
-                numberOfRounds.textContent = `${roundCount}`;
-                if(roundCount >= highScore) {
-                    highScore = roundCount;
-                }
-                bestScore.textContent = `${highScore}`
-            }
-            if(counter == maxFlashCount) { 
-                roundCount++;
-                resetMemorySquaresArray();
-                console.log(memorySquares);
-                counter = 0;
-                numberOfRounds.textContent = `${roundCount}`;
-                if(roundCount >= highScore) {
-                    highScore = roundCount;
-                }
-                bestScore.textContent = `${highScore}`
-            }
-        }
-        
-    })
+// function that increases counter and returns that value to be called inside forEach function?
 
-})
+function increaseCounter() {
+    counter++;
+}
+
+function resetCounter() {
+    counter = 0;
+}
 
 
 
-// function delayClick(delay) {
-    // if(delay == true){
-    //     allSquares.forEach(square => {
-           
-    //                 square.style.pointerEvents = 'none';
 
-    //             })
-    //          } if(delay == false) {
-    
-//         allSquares.forEach(square => {
-//             //setTimeout(() => {
-                
-//                 square.addEventListener('click', function() {
-//                     if(memorySquares[counter] == parseInt(square.id)){
-//                         square.style.backgroundColor = 'green';
-//                         counter++;
-//                     } else {
-//                         console.log(`wrong square... You lose`)
-//                         wrongSquare = true; // force game fail
-//                     }
-//                     if(wrongSquare) {
-//                         resetMemorySquaresArray();
-//                         counter = 0;
-//                         numberOfRounds.textContent = `${roundCount}`;
-//                         if(roundCount >= highScore) {
-//                             highScore = roundCount;
-//                         }
-//                         bestScore.textContent = `${highScore}`
-//                     }
-//                     if(counter == maxFlashCount) { 
-//                         roundCount++;
-//                         resetMemorySquaresArray();
-//                         console.log(memorySquares);
-//                         counter = 0;
-//                         numberOfRounds.textContent = `${roundCount}`;
-//                         if(roundCount >= highScore) {
-//                             highScore = roundCount;
-//                         }
-//                         bestScore.textContent = `${highScore}`
-//                     }
-//             })
-//            // }, 6000)
-//         })
-    
-// }
+
+function resetGame() {
+    console.log('reseting game')
+    numberOfRounds.textContent = '';
+    memorySquares = [];
+    start.classList.remove('disable');
+    allSquares.forEach(square => square.classList.remove('white', 'green', 'red'));
+}
 
 
 start.addEventListener('click', beginGame);
+reset.addEventListener('click', resetGame);
+
+
+
+// allSquares.forEach(square => {   // THE SCOPE OF THE FOREACH LOOP
+//     square.addEventListener('click', function() {
+//             if(canYouClick){
+//                  console.log(`square.id - ${square.id}, memorySquares- ${memorySquares}`)
+//                  console.log(counter)
+//                 //  console.log(`memory squares- ${memorySquares}`)
+//             if(memorySquares[counter] === parseInt(square.id)){ //why is memorySquares undefined after 1st correct click after you fail a round
+//                 console.log(`memorySquares- ${memorySquares[counter]} and square id ${square.id} `)
+//                 //square.classList.remove('white')
+//                 square.classList.add('green');
+//                 //addGreenClass(square);
+//                 console.log(square)
+//                 counter++;
+//                 console.log(counter);
+//             } else {
+//                 console.log(`${square.id} != ${memorySquares[counter]}`)
+//                 square.classList.add('red');
+//                 canYouClick = false;
+//                 wrongSquare = true; // force game fail
+//             }
+//             // if you click the wrong square
+//             if(wrongSquare) {
+//                resetMemorySquaresColor();
+//                //youCanClick(true);
+//                 counter = 0;
+//                 numberOfRounds.textContent = `${roundCount}`;
+//                 if(roundCount >= highScore) {
+//                     highScore = roundCount;
+//                 }
+//                 bestScore.textContent = `${highScore}`
+//             }
+//             // if you click every square correctly
+//             if(counter == maxFlashCount) { 
+//                 start.classList.remove('disable');
+//                 roundCount++;
+//                 resetMemorySquaresColor();
+//                 console.log(memorySquares);
+//                 counter = 0;
+//                 numberOfRounds.textContent = `${roundCount}`;
+//                 if(roundCount >= highScore) {
+//                     highScore = roundCount;
+//                 }
+//                 bestScore.textContent = `${highScore}`
+//             }
+//         }
+        
+//     })
+
+// })

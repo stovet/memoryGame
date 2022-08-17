@@ -17,3 +17,24 @@
     height: 30px;
     width: 50px;
 }
+
+.disable {
+    pointer-events: none;
+}
+
+.green {
+    background-color: green;
+    color: green;
+}
+
+.red {
+    background-color: red;
+}
+
+.white {
+    background-color: white;
+}
+
+.black {
+    background-color: black;
+}
